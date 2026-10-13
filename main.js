@@ -62,7 +62,17 @@ function updateWatchButton(p){
 if(!THREE.WebGLRenderer || mobile || reduced){
   document.body.classList.add('fallback','ready');
   loading.remove();
-  fallbackScroll();
+  if(mobile&&!reduced){
+    try{
+      const {startMobile}=await import('./mobile.js');
+      document.body.classList.add('mobile-cinematic');
+      startMobile({headline,secondLine,hint,updateWatchButton,clamp,smooth});
+    }catch(error){
+      console.error('Mobile workshop:',error);
+      document.body.classList.remove('mobile-cinematic');
+      fallbackScroll();
+    }
+  }else fallbackScroll();
 }else{
   try{await start()}catch(error){console.error(error);document.body.classList.add('fallback','ready');loading.remove()}
 }

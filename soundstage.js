@@ -22,7 +22,8 @@ const beatOpacity=(t,i)=>{const [a,b]=beats[i],edge=.035;return clamp(smooth((t-
 const cameraKeys=[[0,-12],[.17,-7],[.2,2],[.37,3],[.4,11],[.57,12],[.6,20],[.77,21],[.79,29],[.84,30],[.91,33],[1,39.2]];
 const mobile=matchMedia('(max-width: 700px)').matches;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let p=0,entry=0,exit=0,renderer,scene,camera,logo,video,videoIsVisible=false;
+if(mobile)section.classList.add('soundstage-static');
+let p=0,entry=0,exit=0,renderer,scene,camera,logo,video,videoIsVisible=false,mobile3dFailed=false;
 let lastScrollY=scrollY,arrivalUsed=false,arrivalLocked=false;
 let arrivalTop=0,arrivalStarted=0,lastBlockedInput=0,unlockTimer,touchStartY=0;
 const scrimImages=[],scrimCloths=[],scrimHalos=[];
@@ -96,21 +97,21 @@ function titleState(t){
   const idx=t<.2?0:t<.4?1:t<.6?2:t<.79?3:-1;
   status.textContent=idx<0?'':'0'+(idx+1)+' / 04';
   status.style.opacity=idx<0?'0':'.62';
-  if(mobile||reduced){
+  if(reduced||section.classList.contains('soundstage-static')){
     const reveal=smooth((t-.82)/.055),split=smooth((t-.905)/.075);
     mobileLogo.style.opacity=String(reveal);
     mobileLogo.children[0].style.transform=`translateY(${-split*110}px)`;
     mobileLogo.children[1].style.transform=`translateY(${split*110}px)`;
     mobileLogo.children[2].style.opacity=String(1-split);
   }
-  if(mobile||reduced){
+  if(reduced||section.classList.contains('soundstage-static')){
     const sources=['Video_Shot_1.5.mp4','Animation.png','Music_Zia 5.PNG','3D_cube_lamp_displacement_0139.png'];
     const newIdx=idx<0?4:idx;
     if(fallback.dataset.beat!==String(newIdx)){
       fallback.dataset.beat=String(newIdx);
       if(newIdx===0){
         fallback.style.backgroundImage="linear-gradient(90deg,#000b,#0002),url('./media/el-camino-feature.jpg')";
-        if(mobile)mobileVideo.classList.add('is-visible');
+        if(mobile3dFailed)mobileVideo.classList.add('is-visible');
       }else{
         fallback.style.backgroundImage=newIdx===4?'none':`linear-gradient(90deg,#000b,#0002),url("${asset+sources[newIdx]}")`;
         mobileVideo.classList.remove('is-visible');mobileVideo.pause();
@@ -160,9 +161,10 @@ function update(){
   if(lastScrollY<landing&&scrollY>=landing&&scrollY>lastScrollY&&!arrivalUsed)pauseAtFeature(landing);
   lastScrollY=scrollY;
   titleState(p);
-  if(mobile){
+  if(mobile&&mobile3dFailed){
     const rect=section.getBoundingClientRect();
     const active=p<.2&&rect.top<innerHeight&&rect.bottom>0;
+    mobileVideo.classList.toggle('is-visible',active);
     if(active){if(!mobileVideo.src)mobileVideo.src=asset+'Video_Shot_1.5.mp4';mobileVideo.play().catch(()=>{})}
     else mobileVideo.pause();
   }
@@ -179,12 +181,36 @@ addEventListener('da-language-change',event=>{
 });
 update();
 
-if(!mobile&&!reduced){
-  try{await init()}catch(error){console.error('Soundstage preview:',error);section.classList.add('soundstage-static')}
-}else{
+function loadStaticLogo(){
   Promise.all(['Domo','Arigato','Studio'].map(word=>croppedSvgTexture(asset+`DA_logo_${word}.svg`))).then(entries=>{
     entries.forEach((entry,i)=>mobileLogo.children[i].src=entry.texture.image.toDataURL('image/png'));
   }).catch(error=>console.error('Soundstage logo:',error));
+}
+if(reduced)loadStaticLogo();
+if(!reduced){
+  if(mobile){
+    let started=false;
+    const startNearStage=()=>{
+      if(started||section.getBoundingClientRect().top>innerHeight*1.5)return;
+      started=true;
+      removeEventListener('scroll',startNearStage);
+      init().then(()=>{
+        mobileVideo.pause();
+        mobileVideo.classList.remove('is-visible');
+        section.classList.remove('soundstage-static');
+        update();
+      }).catch(error=>{
+        console.error('Mobile soundstage:',error);
+        mobile3dFailed=true;
+        loadStaticLogo();
+        update();
+      });
+    };
+    addEventListener('scroll',startNearStage,{passive:true});
+    startNearStage();
+  }else{
+    try{await init()}catch(error){console.error('Soundstage preview:',error);section.classList.add('soundstage-static')}
+  }
 }
 
 function stageConcreteMaterial(){
@@ -259,8 +285,8 @@ function addStageHaze(){
 }
 
 async function init(){
-  renderer=new THREE.WebGLRenderer({alpha:false,antialias:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  renderer=new THREE.WebGLRenderer({alpha:false,antialias:!mobile,powerPreference:mobile?'low-power':'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.2:1.5));
   renderer.setSize(innerWidth,innerHeight);
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
@@ -268,7 +294,7 @@ async function init(){
   mount.appendChild(renderer.domElement);
   scene=new THREE.Scene();scene.background=new THREE.Color('#171c1b');
   scene.fog=new THREE.FogExp2('#465251',.024);
-  camera=new THREE.PerspectiveCamera(59,innerWidth/innerHeight,.05,100);
+  camera=new THREE.PerspectiveCamera(mobile?70:59,innerWidth/innerHeight,.05,100);
 
   const gltf=await new GLTFLoader().loadAsync(asset+'soundstage.glb');
   scene.add(gltf.scene);
@@ -362,8 +388,13 @@ function frame(){
   const rect=section.getBoundingClientRect();
   if(rect.bottom<=0||rect.top>=innerHeight)return;
   const y=rect.top>0?THREE.MathUtils.lerp(-23,-12,entry):cameraY(p)+exit*9;
-  camera.position.set(0,1.78,-y);
-  camera.lookAt(0,2.85,-y-13);
+  if(mobile){
+    camera.position.set(0,1.72,-y+3.5);
+    camera.lookAt(0,2.75,-y-13);
+  }else{
+    camera.position.set(0,1.78,-y);
+    camera.lookAt(0,2.85,-y-13);
+  }
   scrimImages.forEach((mesh,i)=>{
     const visible=beatOpacity(p,i);
     mesh.material.opacity=.47*visible;
