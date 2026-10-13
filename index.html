@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=League+Spartan:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=mobile-motion-player">
   <link rel="stylesheet" href="soundstage.css">
   <script type="importmap">
     {"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}
@@ -66,8 +66,6 @@
             <a id="youtube-link" href="https://youtu.be/3KKLrafJkb4" target="_blank" rel="noopener noreferrer">Ver en YouTube ↗</a>
           </div>
         </div>
-        <div class="player-layer" id="player-layer"></div>
-        <button class="close-film" id="close-film" type="button">← Volver</button>
       </div>
       <div class="library" id="library" aria-label="Explorar proyectos">
         <div class="library-heading">
@@ -99,8 +97,15 @@
       <img class="footer-logo" src="./assets/logo/domo-arigato-logo.svg" alt="Domo Arigato">
     </div>
   </footer>
+  <div class="film-overlay" id="film-overlay" role="dialog" aria-modal="true" aria-label="Reproductor de video" hidden>
+    <div class="film-overlay-backdrop" id="film-backdrop"></div>
+    <div class="film-overlay-dialog">
+      <div class="film-overlay-bar"><button class="close-film" id="close-film" type="button">← Volver</button></div>
+      <div class="player-layer" id="player-layer"></div>
+    </div>
+  </div>
   <script src="carousel.js" defer></script>
-  <script type="module" src="main.js"></script>
-  <script type="module" src="soundstage.js"></script>
+  <script type="module" src="main.js?v=mobile-motion-player"></script>
+  <script type="module" src="soundstage.js?v=mobile-motion-player"></script>
 </body>
 </html>

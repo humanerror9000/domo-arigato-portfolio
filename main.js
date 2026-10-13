@@ -30,28 +30,38 @@ language.onclick=()=>{
   window.dispatchEvent(new CustomEvent('da-language-change',{detail:{english}}));
 };
 function playFilm(){
-  const frame=document.querySelector('#film-frame');
-  if(frame.querySelector('iframe'))return;
+  const overlay=document.querySelector('#film-overlay');
+  if(!overlay.hidden)return;
   const selected=window.selectedPortfolioWork||{title:'El Camino',id:'3KKLrafJkb4'};
   if(selected.link){window.open(selected.link,'_blank','noopener,noreferrer');return;}
+  previousFilmFocus=document.activeElement;
   const iframe=document.createElement('iframe');
   iframe.title=selected.title;
   iframe.src=`https://www.youtube.com/embed/${selected.id}?autoplay=1&rel=0&playsinline=1`;
   iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
   iframe.allowFullscreen=true;
   document.querySelector('#player-layer').append(iframe);
-  frame.classList.add('playing');
-  document.querySelector('#feature-shell').classList.add('is-playing');
+  overlay.hidden=false;
+  document.documentElement.classList.add('film-open');
+  document.body.classList.add('film-open');
   document.querySelector('#close-film').focus();
+}
+let previousFilmFocus=null;
+function closeFilm(){
+  const overlay=document.querySelector('#film-overlay');
+  if(overlay.hidden)return;
+  overlay.hidden=true;
+  document.querySelector('#player-layer').replaceChildren();
+  document.documentElement.classList.remove('film-open');
+  document.body.classList.remove('film-open');
+  (previousFilmFocus?.isConnected?previousFilmFocus:document.querySelector('#play-film')).focus();
+  previousFilmFocus=null;
 }
 watchHero.onclick=()=>{window.selectPortfolioWork?.(1);feature.scrollIntoView({behavior:'smooth'});playFilm()};
 document.querySelector('#play-film').onclick=playFilm;
-document.querySelector('#close-film').onclick=()=>{
-  document.querySelector('#player-layer').replaceChildren();
-  document.querySelector('#film-frame').classList.remove('playing');
-  document.querySelector('#feature-shell').classList.remove('is-playing');
-  document.querySelector('#play-film').focus();
-};
+document.querySelector('#close-film').onclick=closeFilm;
+document.querySelector('#film-backdrop').onclick=closeFilm;
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeFilm()});
 function updateWatchButton(p){
   const visible=false;
   watchHero.classList.toggle('visible',visible);
@@ -64,7 +74,7 @@ if(!THREE.WebGLRenderer || mobile || reduced){
   loading.remove();
   if(mobile&&!reduced){
     try{
-      const {startMobile}=await import('./mobile.js');
+      const {startMobile}=await import('./mobile.js?v=mobile-motion-player');
       document.body.classList.add('mobile-cinematic');
       startMobile({headline,secondLine,hint,updateWatchButton,clamp,smooth});
     }catch(error){

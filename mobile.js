@@ -5,25 +5,30 @@ export function startMobile({headline,secondLine,hint,updateWatchButton,clamp,sm
   const track=document.querySelector('.scroll-track');
   const scene=document.createElement('div');
   scene.className='mobile-workshop-scene';
-  const plates={};
-  for(const name of ['opening','approach','screen']){
-    const plate=document.createElement('div');
-    plate.className=`mobile-workshop-plate mobile-workshop-${name}`;
-    const image=document.createElement('img');
-    image.src=`./assets/mobile/workshop-${name}.jpg`;
-    image.alt='';
-    image.decoding='async';
-    plate.append(image);
-    scene.append(plate);
-    plates[name]=plate;
+  const canvas=document.createElement('canvas');
+  canvas.className='mobile-workshop-canvas';
+  canvas.width=720;
+  canvas.height=1280;
+  const context=canvas.getContext('2d',{alpha:false});
+  scene.append(canvas);
+  let pendingFrame=0;
+  function scheduleUpdate(){
+    if(pendingFrame)return;
+    pendingFrame=requestAnimationFrame(()=>{pendingFrame=0;update()});
   }
+  const frames=Array.from({length:40},(_,index)=>{
+    const image=new Image();
+    image.onload=scheduleUpdate;
+    image.src=`./assets/mobile/sequence/frame-${String(index).padStart(2,'0')}.jpg`;
+    return image;
+  });
   const crt=document.createElement('div');
   crt.className='mobile-crt-copy';
   crt.setAttribute('aria-hidden','true');
   const words=document.createElement('span');
   words.innerHTML='Más<br>intención.';
   crt.append(words);
-  plates.screen.append(crt);
+  scene.append(crt);
   const flash=document.createElement('div');
   flash.className='mobile-workshop-flash';
   fallback.append(scene,flash);
@@ -37,15 +42,21 @@ export function startMobile({headline,secondLine,hint,updateWatchButton,clamp,sm
   function update(){
     const p=clamp(scrollY/(track.offsetHeight-innerHeight));
     const handoff=smooth((scrollY-(track.offsetHeight-innerHeight))/innerHeight);
-    const approach=smooth((p-.22)/.23);
-    const screen=smooth((p-.52)/.2);
-    plates.opening.style.opacity=String(1-approach);
-    plates.approach.style.opacity=String(approach*(1-screen));
-    plates.screen.style.opacity=String(screen);
-    plates.opening.style.transform=`scale(${1+.14*smooth(p/.4)})`;
-    plates.approach.style.transform=`scale(${1+.13*smooth((p-.34)/.31)})`;
-    plates.screen.style.transform=`scale(${1+.6*smooth((p-.69)/.31)+handoff*.4})`;
-    const intent=smooth((p-.68)/.1);
+    const frame=clamp(p/.76)* (frames.length-1);
+    const first=Math.floor(frame);
+    const second=Math.min(first+1,frames.length-1);
+    const loaded=index=>frames[index].complete&&frames[index].naturalWidth>0;
+    if(loaded(first)||loaded(second)){
+      context.globalAlpha=1;
+      context.drawImage(frames[loaded(first)?first:second],0,0,720,1280);
+      if(loaded(first)&&loaded(second)&&first!==second){
+        context.globalAlpha=frame-first;
+        context.drawImage(frames[second],0,0,720,1280);
+        context.globalAlpha=1;
+      }
+    }
+    scene.style.transform=`translate(-50%,-50%) scale(${1+.6*smooth((p-.76)/.24)+handoff*.4})`;
+    const intent=smooth((p-.76)/.08);
     crt.style.opacity=String(intent);
     words.style.opacity=String(1-smooth((p-.9)/.1));
     flash.style.opacity=String(.62*smooth((p-.9)/.1)+.2*handoff);
@@ -56,7 +67,7 @@ export function startMobile({headline,secondLine,hint,updateWatchButton,clamp,sm
     hint.style.opacity=String(1-smooth(p/.18));
     updateWatchButton(p);
   }
-  addEventListener('scroll',update,{passive:true});
+  addEventListener('scroll',scheduleUpdate,{passive:true});
   addEventListener('resize',resize,{passive:true});
   addEventListener('da-language-change',event=>{
     words.innerHTML=event.detail.english?'More<br>intention.':'Más<br>intención.';

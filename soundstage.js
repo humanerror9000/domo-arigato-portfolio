@@ -47,6 +47,9 @@ function pauseAtFeature(top){
   arrivalTop=Math.round(top);
   arrivalStarted=lastBlockedInput=performance.now();
   window.scrollTo({top:arrivalTop,behavior:'instant'});
+  // The arrival hold is for exploring the film strip, so its controls must
+  // remain clickable even while downward scrolling is temporarily blocked.
+  feature.style.pointerEvents='auto';
   scheduleRelease();
 }
 addEventListener('wheel',event=>{
@@ -141,7 +144,7 @@ function update(){
     featureShell.style.margin='0';
     featureShell.style.transform=`translateX(-50%) scale(${.76+.24*exit})`;
     featureShell.style.opacity=String(reveal);
-    feature.style.pointerEvents='none';
+    feature.style.pointerEvents=reveal>.65?'auto':'none';
   }else{
     feature.classList.remove('is-handing-off');
     featureBackdrop.style.opacity='0';
