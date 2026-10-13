@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061013">
+  <title>Domo Arigato — Menos ruido</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=League+Spartan:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="soundstage.css">
+  <script type="importmap">
+    {"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <div id="stage" aria-hidden="true"></div>
+  <div id="fallback" aria-hidden="true"></div>
+  <div id="loading" role="status">Cargando el taller <span id="progress">0%</span></div>
+  <header class="topbar"><span>DOMO ARIGATO</span><button id="language" type="button" aria-label="Switch language">EN</button></header>
+  <button id="watch-hero" class="watch-hero" type="button">Ver El Camino <span>↗</span></button>
+  <main>
+    <section class="scroll-track" aria-label="Presentación">
+      <div class="sticky-copy">
+        <h1 id="headline">Menos<br>ruido.</h1>
+        <p id="second-line">Más intención.</p>
+        <span class="scroll-hint" id="scroll-hint">Desliza para explorar <span>↓</span></span>
+      </div>
+    </section>
+    <section class="soundstage-track" id="soundstage" aria-label="Qué hacemos">
+      <div class="soundstage-viewport">
+        <div id="soundstage-canvas" aria-hidden="true"></div>
+        <div class="soundstage-fallback" aria-hidden="true"></div>
+        <video class="soundstage-mobile-video" id="soundstage-mobile-video" muted loop playsinline preload="none" poster="./media/el-camino-feature.jpg" aria-hidden="true"></video>
+        <div class="soundstage-vignette" aria-hidden="true"></div>
+        <div class="soundstage-curtain" aria-hidden="true"></div>
+        <div class="soundstage-titles" aria-live="off">
+          <h2 class="soundstage-title is-left" data-beat="0" data-es="Videos y<br>campañas." data-en="Films and<br>campaigns.">Videos y<br>campañas.</h2>
+          <h2 class="soundstage-title is-right" data-beat="1" data-es="Animación y<br>personajes." data-en="Animation and<br>characters.">Animación y<br>personajes.</h2>
+          <h2 class="soundstage-title is-left" data-beat="2" data-es="Música." data-en="Music.">Música.</h2>
+          <h2 class="soundstage-title is-right" data-beat="3" data-es="3D." data-en="3D.">3D.</h2>
+        </div>
+        <div class="soundstage-mobile-logo" id="soundstage-mobile-logo" aria-label="Domo Arigato Studio">
+          <img alt="" data-logo-word="domo">
+          <img alt="" data-logo-word="arigato">
+          <img alt="" data-logo-word="studio">
+        </div>
+        <div class="soundstage-status" id="soundstage-status">01 / 04</div>
+      </div>
+    </section>
+    <section class="next-panel" id="feature">
+      <div class="feature-transition-backdrop" aria-hidden="true"></div>
+      <div class="feature-placeholder" aria-hidden="true"></div>
+      <div class="feature-shell" id="feature-shell">
+      <div class="feature-hero" id="film-frame">
+        <img class="feature-art" src="./media/el-camino-feature.jpg" alt="">
+        <div class="feature-blur" aria-hidden="true"></div>
+        <div class="feature-scrim" aria-hidden="true"></div>
+        <div class="feature-copy">
+          <p class="feature-kicker" id="panel-kicker">Película destacada · 00:47</p>
+          <h2 id="panel-title">El Camino</h2>
+          <p class="note" id="panel-note">Cuatro ciclistas, cuatro épocas y una misma carretera de montaña. Una pieza personal sobre el camino que nos va haciendo.</p>
+          <div class="feature-actions">
+            <button id="play-film" class="play-film" type="button">Ver película <span>▶</span></button>
+            <a id="youtube-link" href="https://youtu.be/3KKLrafJkb4" target="_blank" rel="noopener noreferrer">Ver en YouTube ↗</a>
+          </div>
+        </div>
+        <div class="player-layer" id="player-layer"></div>
+        <button class="close-film" id="close-film" type="button">← Volver</button>
+      </div>
+      <div class="library" id="library" aria-label="Explorar proyectos">
+        <div class="library-heading">
+          <div><p class="library-eyebrow" id="library-eyebrow">Selección / Archivo</p><h2 id="library-title">Explora el trabajo.</h2></div>
+          <div class="library-controls">
+            <span id="library-count" aria-live="polite">01 / 11</span>
+            <button id="library-prev" type="button" aria-label="Proyecto anterior">←</button>
+            <button id="library-next" type="button" aria-label="Proyecto siguiente">→</button>
+          </div>
+        </div>
+        <div class="library-track" id="library-track" role="region" aria-roledescription="carousel" aria-label="Proyectos en video" tabindex="0"></div>
+        <div class="library-footer"><p id="library-instruction">Pasa el cursor, arrastra, desliza o usa las flechas para explorar.</p><a href="https://www.youtube.com/@thisisziaai" target="_blank" rel="noopener noreferrer" id="zia-link">Más de Zia ↗</a></div>
+      </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer" id="contact">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <p class="footer-eyebrow">DOMO ARIGATO</p>
+          <h2 id="footer-heading">Hablemos.</h2>
+        </div>
+        <div class="footer-contact">
+          <a href="mailto:domoarigato.ai@gmail.com"><span id="footer-email-label">Correo</span><strong>domoarigato.ai@gmail.com</strong></a>
+          <a href="tel:+573103055544"><span id="footer-phone-label">Cel.</span><strong>+57 310 305 5544</strong></a>
+        </div>
+      </div>
+      <img class="footer-logo" src="./assets/logo/domo-arigato-logo.svg" alt="Domo Arigato">
+    </div>
+  </footer>
+  <script src="carousel.js" defer></script>
+  <script type="module" src="main.js"></script>
+  <script type="module" src="soundstage.js"></script>
+</body>
+</html>

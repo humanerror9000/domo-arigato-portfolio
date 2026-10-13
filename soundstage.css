@@ -1,0 +1,19 @@
+.soundstage-track{position:relative;z-index:1;height:720vh;background:transparent}
+.soundstage-viewport{position:fixed;inset:0;height:100vh;overflow:hidden;background:#10100e;opacity:0;pointer-events:none;will-change:opacity}
+#soundstage-canvas,.soundstage-fallback,.soundstage-vignette,.soundstage-titles{position:absolute;inset:0}
+#soundstage-canvas canvas{display:block;width:100%;height:100%}
+.soundstage-fallback{display:none;background:#232321 center/cover no-repeat}
+.soundstage-mobile-video{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.6) brightness(.45)}
+.soundstage-vignette{pointer-events:none;background:linear-gradient(90deg,#0008 0%,transparent 35%,transparent 68%,#0006 100%),linear-gradient(0deg,#0009,transparent 29%,transparent 80%,#0005)}
+.soundstage-curtain{position:absolute;inset:0;z-index:1;pointer-events:none;background:#060d0f;opacity:0}
+.soundstage-titles{pointer-events:none;z-index:2}
+.soundstage-title{position:absolute;top:38%;width:43%;margin:0;color:#fff;font:800 clamp(3.6rem,6.9vw,8.3rem)/.84 'League Spartan',Arial,sans-serif;letter-spacing:-.042em;text-shadow:0 4px 25px #0009;opacity:0;will-change:opacity,transform}
+.soundstage-title.is-left{left:6.8%}.soundstage-title.is-right{right:5.6%}
+.soundstage-status{position:absolute;z-index:2;bottom:5vh;right:5vw;font:600 .69rem Inter,Arial,sans-serif;letter-spacing:.18em;color:#fff;opacity:.62}
+.soundstage-track.soundstage-static .soundstage-fallback{display:block}
+.soundstage-track.soundstage-static #soundstage-canvas{display:none}
+.soundstage-mobile-logo{display:none;position:absolute;z-index:3;top:50%;left:50%;width:min(78vw,680px);transform:translate(-50%,-50%);opacity:0;pointer-events:none}
+.soundstage-mobile-logo img{display:block;width:100%;height:auto;margin:0 auto}
+.soundstage-mobile-logo img[data-logo-word="studio"]{width:28%;margin-top:1rem}
+@media(max-width:700px){.soundstage-track{height:490vh}#soundstage-canvas{display:none}.soundstage-fallback{display:block;background-position:center;background-size:cover;filter:saturate(.7) brightness(.63)}.soundstage-mobile-video.is-visible{display:block}.soundstage-mobile-logo{display:block}.soundstage-vignette{background:linear-gradient(0deg,#000b,transparent 55%),linear-gradient(90deg,#0008,transparent)}.soundstage-title{top:45%;left:7%!important;right:7%!important;width:86%;font-size:clamp(3.8rem,13vw,6.5rem);text-shadow:0 3px 18px #000}.soundstage-status{bottom:6vh;right:7vw}}
+@media(prefers-reduced-motion:reduce){.soundstage-fallback{display:block}.soundstage-title{will-change:auto}}
