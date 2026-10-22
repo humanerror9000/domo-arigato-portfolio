@@ -133,3 +133,14 @@ html.film-open,body.film-open{overflow:hidden}
 .film-overlay .player-layer{display:block;position:relative;inset:auto;aspect-ratio:16/9}
 .film-overlay .player-layer iframe{display:block;width:100%;height:100%;border:0}
 @media(max-width:700px){.film-overlay{padding:8px}.film-overlay-dialog{width:100%;max-height:calc(100dvh - 16px)}.film-overlay-bar{height:60px;padding:0 12px}.film-overlay .close-film{min-height:44px}}
+
+.making-of{border:1px solid #70e4ef9c;border-radius:99px;background:#061013ae;color:#f5faf8;padding:.95rem 1.2rem;font:700 .84rem 'Inter',Arial,sans-serif;cursor:pointer;backdrop-filter:blur(8px)}
+.making-of:hover{background:#174046}
+.making-of:focus-visible{outline:2px solid #70e4ef;outline-offset:3px}
+.making-of[hidden],.film-overlay-bar a[hidden]{display:none}
+.film-overlay-bar{justify-content:space-between;gap:1rem}
+.film-overlay-bar a{color:#c5f4f5;font:600 .78rem 'Inter',Arial,sans-serif;text-decoration:none}
+.film-overlay-bar a:hover{text-decoration:underline}
+.film-overlay.is-portrait .film-overlay-dialog{width:min(94vw,510px,45dvh)}
+.film-overlay.is-portrait .player-layer{aspect-ratio:9/16}
+@media(max-width:700px){.film-overlay.is-portrait .film-overlay-dialog{width:min(96vw,510px,45dvh)}}
