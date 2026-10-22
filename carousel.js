@@ -1,7 +1,7 @@
 const works = [
   {title:'Reel 2026', id:'6m9t-P_0z8I', type:{es:'Reel del estudio',en:'Studio reel'}, description:{es:'Hacemos video. Animación. Música. 3D. Para que tu idea se vea, se escuche y se entienda.',en:'We make video. Animation. Music. 3D. So your idea is seen, heard and understood.'}},
   {title:'El Camino', id:'3KKLrafJkb4', image:'./media/el-camino-feature.jpg', type:{es:'Película destacada · 00:47',en:'Featured film · 00:47'}, description:{es:'Cuatro ciclistas, cuatro épocas y una misma carretera de montaña. Una pieza personal sobre el camino que nos va haciendo.',en:'Four cyclists, four eras, one mountain road. A personal film about the journey that shapes us.'}},
-  {title:'Hallway Maze', id:'Ll_XkMD3p58', type:{es:'3D + IA · Creación audiovisual',en:'3D + AI · Filmmaking'}, description:{es:'Un ejercicio de creación audiovisual que combina 3D e inteligencia artificial.',en:'A filmmaking experiment combining 3D and AI.'}},
+  {title:'Hallway Maze', id:'Ll_XkMD3p58', makingOf:{id:'0GyGMwyzTo4',link:'https://youtube.com/shorts/0GyGMwyzTo4?feature=share'}, type:{es:'3D + IA · Creación audiovisual',en:'3D + AI · Filmmaking'}, description:{es:'Un ejercicio de creación audiovisual que combina 3D e inteligencia artificial.',en:'A filmmaking experiment combining 3D and AI.'}},
   {title:'Tomorrow on Demand', id:'C1o2wDDHSAk', type:{es:'Cortometraje original · Ciencia ficción',en:'Original short film · Science fiction'}, description:{es:'¿Y si pudieras ver tu propio futuro?',en:'What if you could see your own future?'}},
   {title:'Here', id:'XBWSGUxN3VY', type:{es:'Tráiler conceptual original · Ficción especulativa',en:'Original concept trailer · Speculative fiction'}, description:{es:'En un futuro donde sobrevivir ya no determina el camino, ¿qué hace que valga la pena quedarse?',en:'In a future where survival no longer chooses your path, what makes a life worth staying for?'}},
   {title:'Savital', id:'w742eKkXbfI', type:{es:'Animatic · 2025',en:'Animatic · 2025'}, description:{es:'Animatic para campaña de Savital 2025. Creación de modelo de voz y animación de personaje realista — Taliana Vargas. Cliente: RCN Comerciales.',en:'Animatic for Savital’s 2025 campaign. Voice model creation and realistic character animation — Taliana Vargas. Client: RCN Comerciales.'}},
@@ -17,6 +17,7 @@ const count = document.querySelector('#library-count');
 const featureArt = document.querySelector('.feature-art');
 const featureHero = document.querySelector('#film-frame');
 const playButton = document.querySelector('#play-film');
+const makingOfButton = document.querySelector('#play-making-of');
 const youtubeLink = document.querySelector('#youtube-link');
 const cards = works.map((work, index) => {
   const card = document.createElement('button');
@@ -70,6 +71,8 @@ function renderPreviewCopy() {
   document.querySelector('#panel-title').textContent = work.title;
   document.querySelector('#panel-note').textContent = work.description[language];
   playButton.innerHTML = work.link ? (language === 'en' ? 'Open short <span>↗</span>' : 'Abrir corto <span>↗</span>') : (language === 'en' ? 'Watch film <span>▶</span>' : 'Ver película <span>▶</span>');
+  makingOfButton.hidden = !work.makingOf;
+  makingOfButton.textContent = language === 'en' ? 'Making of ▶' : 'Cómo se hizo ▶';
   youtubeLink.href = work.link || `https://youtu.be/${work.id}`;
   youtubeLink.textContent = language === 'en' ? 'Watch on YouTube ↗' : 'Ver en YouTube ↗';
   youtubeLink.hidden = Boolean(work.link);

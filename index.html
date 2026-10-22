@@ -63,6 +63,7 @@
           <p class="note" id="panel-note">Cuatro ciclistas, cuatro épocas y una misma carretera de montaña. Una pieza personal sobre el camino que nos va haciendo.</p>
           <div class="feature-actions">
             <button id="play-film" class="play-film" type="button">Ver película <span>▶</span></button>
+            <button id="play-making-of" class="making-of" type="button" hidden>Cómo se hizo ▶</button>
             <a id="youtube-link" href="https://youtu.be/3KKLrafJkb4" target="_blank" rel="noopener noreferrer">Ver en YouTube ↗</a>
           </div>
         </div>
@@ -100,7 +101,7 @@
   <div class="film-overlay" id="film-overlay" role="dialog" aria-modal="true" aria-label="Reproductor de video" hidden>
     <div class="film-overlay-backdrop" id="film-backdrop"></div>
     <div class="film-overlay-dialog">
-      <div class="film-overlay-bar"><button class="close-film" id="close-film" type="button">← Volver</button></div>
+      <div class="film-overlay-bar"><button class="close-film" id="close-film" type="button">← Volver</button><a id="film-youtube-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Ver en YouTube ↗</a></div>
       <div class="player-layer" id="player-layer"></div>
     </div>
   </div>
