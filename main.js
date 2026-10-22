@@ -22,6 +22,7 @@ language.onclick=()=>{
   hint.innerHTML=(english?'Scroll to explore':'Desliza para explorar')+' <span>↓</span>';
   watchHero.innerHTML=english?'Watch El Camino <span>↗</span>':'Ver El Camino <span>↗</span>';
   document.querySelector('#close-film').textContent=english?'← Back':'← Volver';
+  document.querySelector('#film-youtube-link').textContent=english?'Watch on YouTube ↗':'Ver en YouTube ↗';
   document.querySelector('#footer-heading').textContent=english?"Let's talk.":'Hablemos.';
   document.querySelector('#footer-email-label').textContent=english?'Email':'Correo';
   document.querySelector('#footer-phone-label').textContent=english?'Mobile':'Cel.';
@@ -29,18 +30,25 @@ language.onclick=()=>{
   window.updateLibraryLanguage?.(english);
   window.dispatchEvent(new CustomEvent('da-language-change',{detail:{english}}));
 };
-function playFilm(){
+function playFilm(makingOf=false){
   const overlay=document.querySelector('#film-overlay');
   if(!overlay.hidden)return;
   const selected=window.selectedPortfolioWork||{title:'El Camino',id:'3KKLrafJkb4'};
-  if(selected.link){window.open(selected.link,'_blank','noopener,noreferrer');return;}
+  if(!makingOf&&selected.link){window.open(selected.link,'_blank','noopener,noreferrer');return;}
+  if(makingOf&&!selected.makingOf)return;
+  const video=makingOf?selected.makingOf:selected;
   previousFilmFocus=document.activeElement;
   const iframe=document.createElement('iframe');
-  iframe.title=selected.title;
-  iframe.src=`https://www.youtube.com/embed/${selected.id}?autoplay=1&rel=0&playsinline=1`;
+  iframe.title=makingOf?`${selected.title} — ${english?'Making of':'Cómo se hizo'}`:selected.title;
+  iframe.src=`https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0&playsinline=1`;
+  iframe.referrerPolicy='strict-origin-when-cross-origin';
   iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
   iframe.allowFullscreen=true;
   document.querySelector('#player-layer').append(iframe);
+  overlay.classList.toggle('is-portrait',makingOf);
+  const youtubeFallback=document.querySelector('#film-youtube-link');
+  youtubeFallback.hidden=!makingOf;
+  if(makingOf)youtubeFallback.href=video.link;
   overlay.hidden=false;
   document.documentElement.classList.add('film-open');
   document.body.classList.add('film-open');
@@ -52,13 +60,16 @@ function closeFilm(){
   if(overlay.hidden)return;
   overlay.hidden=true;
   document.querySelector('#player-layer').replaceChildren();
+  overlay.classList.remove('is-portrait');
+  document.querySelector('#film-youtube-link').hidden=true;
   document.documentElement.classList.remove('film-open');
   document.body.classList.remove('film-open');
   (previousFilmFocus?.isConnected?previousFilmFocus:document.querySelector('#play-film')).focus();
   previousFilmFocus=null;
 }
 watchHero.onclick=()=>{window.selectPortfolioWork?.(1);feature.scrollIntoView({behavior:'smooth'});playFilm()};
-document.querySelector('#play-film').onclick=playFilm;
+document.querySelector('#play-film').onclick=()=>playFilm();
+document.querySelector('#play-making-of').onclick=()=>playFilm(true);
 document.querySelector('#close-film').onclick=closeFilm;
 document.querySelector('#film-backdrop').onclick=closeFilm;
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeFilm()});
